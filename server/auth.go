@@ -95,6 +95,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         sessionID := CreateSession(storedUser.ID)
         http.SetCookie(w, &http.Cookie{Name: "session", Value: sessionID, HttpOnly: true})
 
-        json.NewEncoder(w).Encode(map[string]string{"message": "Connexion réussie"})
+        // Rediriger vers la page d'accueil
+        http.Redirect(w, r, "/accueil", http.StatusSeeOther)
     }
+}
+
+func AccueilHandler(w http.ResponseWriter, r *http.Request) {
+    tmpl := template.Must(template.ParseFiles("web/html/accueil.html"))
+    tmpl.Execute(w, nil)
 }

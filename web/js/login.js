@@ -3,7 +3,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    fetch('web/html/login.html', {
+    fetch('/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
