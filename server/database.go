@@ -15,10 +15,10 @@ func InitDB() {
 
 	// Modifier ces valeurs selon ta configuration MySQL
 	user := "root"
-	password := "8426"
+	password := "root"
 	host := "127.0.0.1"
 	port := "3306"
-	database := "forum"
+	database := "test"
 
 	// Chaîne de connexion MySQL
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, password, host, port, database)
