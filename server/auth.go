@@ -1,12 +1,15 @@
 package engine
 
 import (
-    "database/sql"
-    "encoding/json"
-    "html/template"
-    "log"
-    "net/http"
-    "golang.org/x/crypto/bcrypt"
+	"database/sql"
+	"encoding/json"
+	"html/template"
+	"io"
+	"log"
+	"net/http"
+
+	_ "github.com/go-sql-driver/mysql" // Remplace par ton driver si nécessaire
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Page d'accueil
@@ -27,16 +30,21 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if r.Method == "POST" {
-        var user User
-        err := json.NewDecoder(r.Body).Decode(&user)
-        if err != nil {
-            log.Println("Erreur de décodage JSON:", err)
-            http.Error(w, "Données invalides", http.StatusBadRequest)
-            return
-        }
+	if r.Method == "POST" {
+		var user User
+		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+			log.Println("Erreur de décodage JSON:", err)
+			http.Error(w, "Données invalides", http.StatusBadRequest)
+			return
+		}
 
-        log.Println("Données utilisateur reçues:", user)
+		// Hachage du mot de passe avec gestion d'erreur
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Println("Erreur lors du hachage du mot de passe:", err)
+			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+			return
+		}
 
         hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
         if err != nil {
@@ -72,34 +80,22 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if r.Method == "POST" {
-        var user User
-        err := json.NewDecoder(r.Body).Decode(&user)
-        if err != nil {
-            log.Println("Erreur de décodage JSON:", err)
-            http.Error(w, "Données invalides", http.StatusBadRequest)
-            return
-        }
+	if r.Method == http.MethodPost {
+		var user User
 
-        var storedUser User
-        err = DB.QueryRow(`SELECT id, password FROM users WHERE email = ?`, user.Email).Scan(&storedUser.ID, &storedUser.Password)
-        if err == sql.ErrNoRows {
-            http.Error(w, "Utilisateur non trouvé", http.StatusUnauthorized)
-            return
-        } else if err != nil {
-            log.Println("Erreur SQL:", err)
-            http.Error(w, "Erreur serveur", http.StatusInternalServerError)
-            return
-        }
+		// Lire les données du formulaire
+		body, _ := io.ReadAll(r.Body)
+		log.Println("Corps de la requête reçu:", string(body)) // Log des données du formulaire
 
-        err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(user.Password))
-        if err != nil {
-            http.Error(w, "Mot de passe incorrect", http.StatusUnauthorized)
-            return
-        }
+		// Décoder les données JSON
+		if err := json.Unmarshal(body, &user); err != nil {
+			log.Println("Erreur de décodage JSON:", err)
+			http.Error(w, "Données invalides", http.StatusBadRequest)
+			return
+		}
 
-        sessionID := CreateSession(storedUser.ID)
-        http.SetCookie(w, &http.Cookie{Name: "session", Value: sessionID, HttpOnly: true})
+		// Vérification du format des données reçues
+		log.Println("Données reçues après décodage:", user)
 
         // Rediriger vers la page d'accueil
         http.Redirect(w, r, "/accueil", http.StatusSeeOther)
