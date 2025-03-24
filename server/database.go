@@ -26,7 +26,7 @@ func InitDB() {
     DB, err = sql.Open("mysql", dsn)
     if err != nil {
         log.Fatal("Erreur de connexion à MySQL :", err)
-    }
+    }   
 
     // Vérifier la connexion
     if err := DB.Ping(); err != nil {

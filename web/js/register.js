@@ -1,21 +1,33 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded and parsed');
+    document.getElementById('registerForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        console.log('Form submit intercepted');
+        
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-    fetch('web/html/login.html', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: email, password: password })
-    })
-    .then(response => {
-        if (response.ok) {
-            window.location.href = '/accueil';
-        } else {
-            response.text().then(text => alert(text));
-        }
-    })
-    .catch(error => console.error('Erreur:', error));
+        fetch('/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username, email: email, password: password })
+        })
+        .then(response => {
+            if (response.ok) {
+                console.log('Registration successful, redirecting to home.html');
+                window.location.href = '/web/html/home.html';
+            } else {
+                response.text().then(text => {
+                    console.error('Registration failed:', text);
+                    alert(text);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+        });
+    });
 });

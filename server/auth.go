@@ -18,7 +18,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 // Inscription
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "GET" {
-        tmpl, err := template.ParseFiles("web/html/register.html")
+        tmpl, err := template.ParseFiles("/web/html/register.html")
         if err != nil {
             http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
             return
@@ -38,11 +38,15 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
         log.Println("Données utilisateur reçues:", user)
 
-        hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+        hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+        if err != nil {
+            log.Println("Erreur lors du hachage du mot de passe:", err)
+            http.Error(w, "Erreur interne", http.StatusInternalServerError)
+            return
+        }
 
         query := `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`
         _, err = DB.Exec(query, user.Username, user.Email, hashedPassword)
-
         if err != nil {
             log.Println("Erreur lors de l'insertion dans la base de données:", err)
             http.Error(w, "Erreur lors de l'inscription", http.StatusInternalServerError)
@@ -51,6 +55,8 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
         w.WriteHeader(http.StatusCreated)
         json.NewEncoder(w).Encode(map[string]string{"message": "Inscription réussie"})
+    } else {
+        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
     }
 }
 
