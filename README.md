@@ -20,7 +20,7 @@ Avant de lancer le serveur, assurez-vous d'avoir les éléments suivants install
 Construisez et démarrez les conteneurs avec Docker Compose :
 
 Dans votre terminale copier :
-    ```bash	
+    ```bash
     docker-compose up --build
 
 Une fois les conteneurs démarrés, cliquer ci dessous pour accerder au Forum :
