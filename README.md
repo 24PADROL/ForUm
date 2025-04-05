@@ -13,12 +13,14 @@ Avant de lancer le serveur, assurez-vous d'avoir les éléments suivants install
 
 1. Clonez ce dépôt sur votre machine locale :
    ```bash
-   git clone <URL_DU_DEPOT>
+   git clone https://github.com/24PADROL/ForUm.git
    cd ForUm
 
 2. Lancer le serveur
 Construisez et démarrez les conteneurs avec Docker Compose :
+    ```bash	
     docker-compose up --build
 
 Une fois les conteneurs démarrés, accédez à l'application dans votre navigateur à l'adresse suivante :
+    ```bash
     http://localhost:8080
