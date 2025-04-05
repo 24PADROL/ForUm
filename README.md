@@ -18,9 +18,10 @@ Avant de lancer le serveur, assurez-vous d'avoir les éléments suivants install
 
 2. Lancer le serveur
 Construisez et démarrez les conteneurs avec Docker Compose :
+
+Dans votre terminale copier :
     ```bash	
     docker-compose up --build
 
-Une fois les conteneurs démarrés, accédez à l'application dans votre navigateur à l'adresse suivante :
-    ```bash
-    http://localhost:8080
+Une fois les conteneurs démarrés, cliquer ci dessous pour accerder au Forum :
+    - [Forum](http://localhost:8080)
