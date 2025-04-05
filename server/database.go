@@ -13,7 +13,7 @@ var DB *sql.DB
 
 // Initialisation de la base de données
 func InitDB() {
-	var err error
+    var err error
 
     dbUser := os.Getenv("DB_USER")
     dbPass := os.Getenv("DB_PASS")

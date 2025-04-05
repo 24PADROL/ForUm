@@ -29,7 +29,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
         tmpl.Execute(w, nil)
         return
     }
-    
+
     if r.Method == "POST" {
         body, _ := io.ReadAll(r.Body)
         log.Println("Corps de la requête reçu :", string(body)) // Log des données reçues
