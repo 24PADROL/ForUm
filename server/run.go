@@ -12,6 +12,7 @@ func Run(forum *User) {
 	http.HandleFunc("/home", HomeHandler)
 	http.HandleFunc("/login", LoginHandler)
     http.HandleFunc("/register", RegisterHandler)
+    http.HandleFunc("/accueil", AccueilHandler)
 
 
     log.Println("Serveur lancé sur http://localhost:8080")
