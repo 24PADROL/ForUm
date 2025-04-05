@@ -24,4 +24,4 @@ Dans votre terminale copier :
     docker-compose up --build
 
 Une fois les conteneurs démarrés, cliquer ci dessous pour accerder au Forum :
-    - [Forum](http://localhost:8080)
+- [Forum](http://localhost:8080)
