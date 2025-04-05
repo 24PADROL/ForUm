@@ -51,8 +51,8 @@ Une fois les conteneurs lancés avec succès, ouvrez votre navigateur et allez �
 ForUm/
 ├── db/
 │   └── database.sql         # Script SQL pour créer les tables du forum
-├── server/
-├── web/
+├── server/                  # Backend server
+├── web/                     # Frontend web
 │
 ├── Dockerfile               # Image de l'application Go
 ├── docker-compose.yml       # Configuration Docker (MySQL + App)
