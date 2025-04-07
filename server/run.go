@@ -3,16 +3,17 @@ package engine
 import (
     "log"
     "net/http"
+
 )
 
 func Run(forum *User) {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-        http.Redirect(w, r, "/Home", http.StatusFound)
+        http.Redirect(w, r, "/home", http.StatusFound)
     })
-	http.HandleFunc("/Home", HomeHandler)
+	http.HandleFunc("/home", HomeHandler)
 	http.HandleFunc("/login", LoginHandler)
     http.HandleFunc("/register", RegisterHandler)
-    http.HandleFunc("/forum", ForumHandler)
+    http.HandleFunc("/accueil", AccueilHandler)
 
 
     log.Println("Serveur lancé sur http://localhost:8080")
