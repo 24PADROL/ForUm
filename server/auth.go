@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"database/sql"
 	"encoding/json"
 	"html/template"
 	"io"
@@ -45,13 +44,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
 			return
 		}
-
-        hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-        if err != nil {
-            log.Println("Erreur lors du hachage du mot de passe:", err)
-            http.Error(w, "Erreur interne", http.StatusInternalServerError)
-            return
-        }
 
         query := `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`
         _, err = DB.Exec(query, user.Username, user.Email, hashedPassword)
