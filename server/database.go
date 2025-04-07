@@ -38,6 +38,7 @@ func InitDB() {
 
 // Création des tables
 func createTables() {
+	// Table des utilisateurs
 	usersTable := `CREATE TABLE IF NOT EXISTS users (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		username VARCHAR(100) UNIQUE NOT NULL,
@@ -46,6 +47,7 @@ func createTables() {
 		role ENUM('user', 'moderator', 'admin') DEFAULT 'user'
 	);`
 
+	// Table des posts
 	postsTable := `CREATE TABLE IF NOT EXISTS posts (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		user_id INT,
@@ -57,6 +59,7 @@ func createTables() {
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 	);`
 
+	// Table des commentaires
 	commentsTable := `CREATE TABLE IF NOT EXISTS comments (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		user_id INT,
@@ -67,6 +70,7 @@ func createTables() {
 		FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE
 	);`
 
+	// Table des likes
 	likesTable := `CREATE TABLE IF NOT EXISTS likes (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		user_id INT,
@@ -76,6 +80,7 @@ func createTables() {
 		FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE
 	);`
 
+	// Table des notifications
 	notificationsTable := `CREATE TABLE IF NOT EXISTS notifications (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		user_id INT,
@@ -85,6 +90,7 @@ func createTables() {
 		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 	);`
 
+	// Table de la modération
 	moderationTable := `CREATE TABLE IF NOT EXISTS moderation (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		moderator_id INT,
@@ -96,7 +102,17 @@ func createTables() {
 		FOREIGN KEY(post_id) REFERENCES posts(id) ON DELETE CASCADE
 	);`
 
-	tables := []string{usersTable, postsTable, commentsTable, likesTable, notificationsTable, moderationTable}
+	// Table des messages (nouvelle table)
+	messagesTable := `CREATE TABLE IF NOT EXISTS messages (
+		id INT AUTO_INCREMENT PRIMARY KEY,
+		user_id INT,
+		content TEXT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+	);`
+
+	// Création des tables dans la base de données
+	tables := []string{usersTable, postsTable, commentsTable, likesTable, notificationsTable, moderationTable, messagesTable}
 
 	for _, table := range tables {
 		_, err := DB.Exec(table)
@@ -104,5 +120,6 @@ func createTables() {
 			log.Fatal("Erreur lors de la création des tables :", err)
 		}
 	}
+
 	log.Println("Base de données MySQL et tables créées avec succès !")
 }

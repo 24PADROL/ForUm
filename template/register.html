@@ -27,6 +27,7 @@
                 email: document.getElementById('email').value,
                 password: document.getElementById('password').value
             };
+
             fetch('/register', {
                 method: 'POST',
                 headers: {
@@ -37,10 +38,20 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                alert(data.message);
+
+                // Si l'inscription est réussie
+                if (data.message === 'Inscription réussie') {
+                    alert(data.message);
+                    setTimeout(() => {
+                        window.location.href = '/'; // Redirection vers la page d'accueil
+                    }, 1500); // Délai de 1,5 seconde pour voir le message
+                } else {
+                    alert(data.message || 'Erreur lors de l\'inscription');
+                }
             })
             .catch(error => {
                 console.error('Erreur:', error);
+                alert('Erreur de serveur');
             });
         });
     </script>

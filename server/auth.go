@@ -14,14 +14,14 @@ import (
 
 // Page d'accueil
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("template/Home.tmpl"))
+	tmpl := template.Must(template.ParseFiles("template/Home.html"))
 	tmpl.Execute(w, nil)
 }
 
 // Inscription
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		tmpl, err := template.ParseFiles("template/register.tmpl")
+		tmpl, err := template.ParseFiles("template/register.html")
 		if err != nil {
 			http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
 			return
@@ -128,4 +128,122 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		// Réponse JSON de connexion réussie
 		json.NewEncoder(w).Encode(map[string]string{"message": "Connexion réussie"})
 	}
+}
+
+func MessagesHandler(w http.ResponseWriter, r *http.Request) {
+	// Récupérer les messages depuis la base de données
+	messages, err := GetMessages()
+	if err != nil {
+		http.Error(w, "Erreur lors de la récupération des messages", http.StatusInternalServerError)
+		return
+	}
+
+	// Rendre la page HTML avec les messages
+	tmpl, err := template.ParseFiles("template/messages.html")
+	if err != nil {
+		http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+		return
+	}
+	tmpl.Execute(w, messages)
+}
+
+
+
+// Page de discussion
+func ForumHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+        // Récupérer les messages depuis la base de données
+        rows, err := DB.Query("SELECT id, username, message FROM posts ORDER BY created_at DESC")
+        if err != nil {
+            http.Error(w, "Erreur lors de la récupération des messages", http.StatusInternalServerError)
+            return
+        }
+        defer rows.Close()
+
+        var posts []Post
+        for rows.Next() {
+            var post Post
+            if err := rows.Scan(&post.ID, &post.Username, &post.Message); err != nil {
+                http.Error(w, "Erreur de lecture des messages", http.StatusInternalServerError)
+                return
+            }
+            posts = append(posts, post)
+        }
+
+        // Rendu de la page avec les messages
+        tmpl := template.Must(template.ParseFiles("template/forum.tmpl"))
+        tmpl.Execute(w, posts)
+    } else {
+        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+    }
+}
+
+
+func GetMessages() ([]Message, error) {
+	// Récupérer les messages depuis la base de données
+	rows, err := DB.Query("SELECT id, user_id, content, created_at FROM messages ORDER BY created_at DESC")
+	if err != nil {
+		log.Println("Erreur lors de la récupération des messages:", err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	var messages []Message
+
+	for rows.Next() {
+		var message Message
+		if err := rows.Scan(&message.ID, &message.UserID, &message.Content, &message.CreatedAt); err != nil {
+			log.Println("Erreur lors du scan des résultats:", err)
+			return nil, err
+		}
+		messages = append(messages, message)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Println("Erreur lors de l'itération sur les lignes:", err)
+		return nil, err
+	}
+
+	return messages, nil
+}
+
+
+
+// Poster un message
+func PostMessageHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodPost {
+        var message Message
+        // Lire les données du message envoyé en JSON
+        if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
+            http.Error(w, "Données invalides", http.StatusBadRequest)
+            return
+        }
+
+        // Assurer qu'il y a un utilisateur connecté et que l'ID de l'utilisateur est valide
+        userID := 1 // Remplace cela par la logique pour obtenir l'ID utilisateur actuel via la session ou autre.
+
+        // Insérer le message dans la base de données
+        err := InsertMessage(userID, message.Content)
+        if err != nil {
+            http.Error(w, "Erreur lors de la publication du message", http.StatusInternalServerError)
+            return
+        }
+
+        // Répondre avec un message de succès
+        json.NewEncoder(w).Encode(map[string]string{"message": "Message publié avec succès"})
+    } else {
+        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+    }
+}
+
+
+func InsertMessage(userID int, content string) error {
+	// Insérer un message dans la base de données
+	_, err := DB.Exec("INSERT INTO messages (user_id, content) VALUES (?, ?)", userID, content)
+	if err != nil {
+		log.Println("Erreur lors de l'insertion du message:", err)
+		return err
+	}
+	log.Println("Message ajouté avec succès !")
+	return nil
 }
