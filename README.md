@@ -10,6 +10,51 @@ Avant de lancer le serveur, assurez-vous d’avoir installé les éléments suiv
 
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
+- **MySQL** (si vous ne souhaitez pas utiliser Docker pour la base de données)
+
+---
+
+### Installation de MySQL
+
+#### Sur Ubuntu
+1. Mettez à jour vos paquets :
+   ```bash
+   sudo apt update
+   sudo apt upgrade
+   ```
+
+2. Installez MySQL :
+   ```bash
+   sudo apt install mysql-server
+   ```
+
+3. Démarrez le service MySQL :
+   ```bash
+   sudo systemctl start mysql
+   ```
+
+4. (Optionnel) Sécurisez l'installation MySQL :
+   ```bash
+   sudo mysql_secure_installation
+   ```
+
+5. Connectez-vous à MySQL :
+   ```bash
+   sudo mysql -u root -p
+   ```
+
+#### Sur Windows
+1. Téléchargez l'installateur MySQL depuis le site officiel :  
+   👉 [https://dev.mysql.com/downloads/installer/](https://dev.mysql.com/downloads/installer/)
+
+2. Lancez l'installateur et suivez les étapes :
+   - Sélectionnez "Server Only" ou "Developer Default" selon vos besoins.
+   - Configurez un mot de passe pour l'utilisateur `root`.
+
+3. Une fois l'installation terminée, démarrez MySQL depuis le **MySQL Workbench** ou via la ligne de commande :
+   ```cmd
+   mysql -u root -p
+   ```
 
 ---
 
