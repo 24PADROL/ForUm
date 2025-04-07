@@ -14,6 +14,7 @@ func Run(forum *User) {
 	http.HandleFunc("/login", LoginHandler)
     http.HandleFunc("/register", RegisterHandler)
     http.HandleFunc("/accueil", AccueilHandler)
+    http.HandleFunc("/post", PostHandler)
     http.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
 
     log.Println("Serveur lancé sur http://localhost:8080")

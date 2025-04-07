@@ -141,3 +141,43 @@ func AccueilHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("Données reçues après décodage:", user)
 	}
 }
+
+// Page de création de post
+func PostHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == "GET" {
+        tmpl, err := template.ParseFiles("web/html/post.html")
+        if err != nil {
+            log.Println("Erreur lors du chargement du template :", err)
+            http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+            return
+        }
+        tmpl.Execute(w, nil)
+        return
+    }
+
+    if r.Method == "POST" {
+        body, _ := io.ReadAll(r.Body)
+        log.Println("Corps de la requête reçu :", string(body)) // Log des données reçues
+
+        var post Post
+        if err := json.Unmarshal(body, &post); err != nil {
+            log.Println("Erreur de décodage JSON :", err)
+            http.Error(w, "Données invalides", http.StatusBadRequest)
+            return
+        }
+
+        log.Println("Données post après décodage :", post)
+
+        query := `INSERT INTO posts (user_id, title, content, image, category) VALUES (?, ?, ?, ?, ?)`
+        _, err := DB.Exec(query, post.UserID, post.Title, post.Content, post.Image, post.Category)
+        if err != nil {
+            log.Println("Erreur lors de l'insertion du post :", err)
+            http.Error(w, "Erreur lors de la création du post", http.StatusInternalServerError)
+            return
+        }
+
+        log.Println("Post inséré avec succès :", post.Title)
+        w.WriteHeader(http.StatusCreated)
+        json.NewEncoder(w).Encode(map[string]string{"message": "Post créé avec succès"})
+    }
+}
