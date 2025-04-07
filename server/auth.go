@@ -1,13 +1,14 @@
 package engine
 
 import (
+	"database/sql"
 	"encoding/json"
 	"html/template"
 	"io"
 	"log"
 	"net/http"
 
-	_ "github.com/go-sql-driver/mysql" // Remplace par ton driver si nécessaire
+	_ "github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,7 +21,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 // Inscription
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "GET" {
-        tmpl, err := template.ParseFiles("/web/html/register.html")
+        tmpl, err := template.ParseFiles("web/html/register.html")
         if err != nil {
             http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
             return
@@ -29,34 +30,37 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-	if r.Method == "POST" {
-		var user User
-		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-			log.Println("Erreur de décodage JSON:", err)
-			http.Error(w, "Données invalides", http.StatusBadRequest)
-			return
-		}
+    if r.Method == "POST" {
+        body, _ := io.ReadAll(r.Body)
+        log.Println("Corps de la requête reçu :", string(body)) // Log des données reçues
 
-		// Hachage du mot de passe avec gestion d'erreur
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-		if err != nil {
-			log.Println("Erreur lors du hachage du mot de passe:", err)
-			http.Error(w, "Erreur serveur", http.StatusInternalServerError)
-			return
-		}
+        var user User
+        if err := json.Unmarshal(body, &user); err != nil {
+            log.Println("Erreur de décodage JSON :", err)
+            http.Error(w, "Données invalides", http.StatusBadRequest)
+            return
+        }
+
+        log.Println("Données utilisateur après décodage :", user)
+
+        hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+        if err != nil {
+            log.Println("Erreur lors du hachage du mot de passe :", err)
+            http.Error(w, "Erreur serveur", http.StatusInternalServerError)
+            return
+        }
 
         query := `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`
         _, err = DB.Exec(query, user.Username, user.Email, hashedPassword)
         if err != nil {
-            log.Println("Erreur lors de l'insertion dans la base de données:", err)
+            log.Println("Erreur lors de l'insertion utilisateur :", err)
             http.Error(w, "Erreur lors de l'inscription", http.StatusInternalServerError)
             return
         }
 
+        log.Println("Utilisateur inséré avec succès :", user.Username)
         w.WriteHeader(http.StatusCreated)
         json.NewEncoder(w).Encode(map[string]string{"message": "Inscription réussie"})
-    } else {
-        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
     }
 }
 
@@ -64,6 +68,53 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "GET" {
         tmpl, err := template.ParseFiles("web/html/login.html")
+        if err != nil {
+            http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+            return
+        }
+        tmpl.Execute(w, nil)
+        return
+    }
+
+    if r.Method != "POST" {
+        http.Error(w, "Méthode non autorisée", http.StatusMethodNotAllowed)
+        return
+    }
+
+    var loginReq User
+    err := json.NewDecoder(r.Body).Decode(&loginReq)
+    if err != nil {
+        log.Println("Erreur de décodage JSON :", err)
+        http.Error(w, "Données invalides", http.StatusBadRequest)
+        return
+    }
+
+    var storedPassword string
+    var userID int
+    err = DB.QueryRow(`SELECT id, password_hash FROM users WHERE email = ?`, loginReq.Email).Scan(&userID, &storedPassword)
+    if err == sql.ErrNoRows {
+        http.Error(w, "Utilisateur non trouvé", http.StatusUnauthorized)
+        return
+    } else if err != nil {
+        log.Println("Erreur SQL :", err)
+        http.Error(w, "Erreur interne", http.StatusInternalServerError)
+        return
+    }
+
+    err = bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(loginReq.Password))
+    if err != nil {
+        http.Error(w, "Mot de passe incorrect", http.StatusUnauthorized)
+        return
+    }
+
+    // Connexion réussie
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(map[string]string{"message": "Connexion réussie"})
+}
+
+func AccueilHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == "GET" {
+        tmpl, err := template.ParseFiles("web/html/accueil.html")
         if err != nil {
             http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
             return
@@ -88,13 +139,5 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Vérification du format des données reçues
 		log.Println("Données reçues après décodage:", user)
-
-        // Rediriger vers la page d'accueil
-        http.Redirect(w, r, "/accueil", http.StatusSeeOther)
-    }
-}
-
-func AccueilHandler(w http.ResponseWriter, r *http.Request) {
-    tmpl := template.Must(template.ParseFiles("web/html/accueil.html"))
-    tmpl.Execute(w, nil)
+	}
 }

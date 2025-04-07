@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({ username: username, email: email, password: password })
         })
         .then(response => {
-            if (response.ok) {
-                console.log('Registration successful, redirecting to home.html');
+            console.log('Response status:', response.status);
+            if (response.status === 201) {
                 window.location.href = '/web/html/home.html';
             } else {
                 response.text().then(text => {
@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert(text);
                 });
             }
+        })        
         })
         .catch(error => {
             console.error('Erreur:', error);
         });
-    });
 });
