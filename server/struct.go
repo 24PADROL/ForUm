@@ -8,3 +8,11 @@ type User struct {
 	Password string `json:"password"`
 	Role     string `json:"role"`
 }
+
+type Post struct {
+	UserID  int    `json:"user_id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+	Image   string `json:"image"`
+	Category string `json:"category"`
+}

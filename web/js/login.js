@@ -1,21 +1,28 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+document.getElementById("loginForm").addEventListener("submit", async function(event) {
+    event.preventDefault(); // Empêche l'envoi classique du formulaire
 
-    fetch('/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: email, password: password })
-    })
-    .then(response => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ email, password }) // Envoie les données en JSON
+        });
+
         if (response.ok) {
-            window.location.href = '/accueil';
+            console.log("Connexion réussie !");
+            window.location.href = "/web/html/accueil.html"; // Redirige vers la page d'accueil
         } else {
-            response.text().then(text => alert(text));
+            const errorText = await response.text();
+            console.error("Erreur de connexion :", errorText);
+            alert("Erreur : " + errorText);
         }
-    })
-    .catch(error => console.error('Erreur:', error));
+    } catch (error) {
+        console.error("Erreur réseau :", error);
+        alert("Une erreur réseau est survenue. Veuillez réessayer.");
+    }
 });

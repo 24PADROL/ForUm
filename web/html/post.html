@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/web/css/post.css">
+    <title>Créer un Post</title>
+</head>
+<body>
+    <h1>Créer un nouveau post</h1>
+    <form id="postForm">
+        <label for="title">Titre :</label>
+        <input type="text" id="title" name="title" required>
+        <br><br>
+        <label for="content">Contenu :</label>
+        <textarea id="content" name="content" rows="5" required></textarea>
+        <br><br>
+        <label for="image">Image (URL) :</label>
+        <input type="text" id="image" name="image">
+        <br><br>
+        <label for="category">Catégorie :</label>
+        <input type="text" id="category" name="category">
+        <br><br>
+        <button type="submit">Publier</button>
+    </form>
+
+    <script src="/web/js/post.js"></script>
+</body>
+</html>
