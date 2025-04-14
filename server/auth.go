@@ -181,3 +181,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
         json.NewEncoder(w).Encode(map[string]string{"message": "Post créé avec succès"})
     }
 }
+
+// Menu pour voir les post
+func MenuHandler(w http.ResponseWriter, r *http.Request) {
+    
+}
