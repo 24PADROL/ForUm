@@ -10,9 +10,21 @@ type User struct {
 }
 
 type Post struct {
-	UserID  int    `json:"user_id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
-	Image   string `json:"image"`
-	Category string `json:"category"`
+    ID        int    `json:"id"`
+    Username  string `json:"username"`
+    Message   string `json:"message"`
+    CreatedAt string `json:"created_at"` 
 }
+
+type PostMessage struct {
+    Username string `json:"username"`
+    Message  string `json:"message"`
+}
+
+type Message struct {
+    ID        int       `json:"id"`
+    UserID    int       `json:"user_id"`
+    Content   string    `json:"content"`
+    CreatedAt string    `json:"created_at"`
+}
+
