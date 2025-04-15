@@ -10,9 +10,10 @@ type User struct {
 }
 
 type Post struct {
-	UserID  int    `json:"user_id"`
-	Title   string `json:"title"`
-	Content string `json:"content"`
-	Image   string `json:"image"`
+	ID 		 int 	`json:"user_id"`
+	UserID   int    `json:"user_id"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	Image    string `json:"image"`
 	Category string `json:"category"`
 }
