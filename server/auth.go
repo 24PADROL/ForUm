@@ -12,10 +12,45 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// Page d'accueil
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-    tmpl := template.Must(template.ParseFiles("web/html/home.html"))
-    tmpl.Execute(w, nil)
+    session, _ := store.Get(r, "session-name")
+    email, ok := session.Values["email"].(string)
+
+    data := struct {
+        Email string
+        Posts []Post
+    }{}
+
+    if ok && email != "" {
+        data.Email = email
+    }
+
+    rows, err := DB.Query("SELECT id, title, content, image, category FROM posts")
+    if err != nil {
+        http.Error(w, "Erreur lors de la récupération des posts", http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+
+    var posts []Post
+    for rows.Next() {
+        var post Post
+        if err := rows.Scan(&post.ID, &post.Title, &post.Content, &post.Image, &post.Category); err != nil {
+            http.Error(w, "Erreur lors de la lecture des posts", http.StatusInternalServerError)
+            return
+        }
+        posts = append(posts, post)
+    }
+
+    data.Posts = posts
+
+    tmpl, err := template.ParseFiles("web/html/home.html")
+    if err != nil {
+        http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
+        return
+    }
+
+    tmpl.Execute(w, data)
 }
 
 // Inscription
@@ -107,9 +142,21 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    // Connexion réussie
-    w.WriteHeader(http.StatusOK)
-    json.NewEncoder(w).Encode(map[string]string{"message": "Connexion réussie"})
+    session, _ := store.Get(r, "session-name")
+    session.Values["email"] = loginReq.Email
+    session.Save(r, w)
+
+    log.Println("Connexion réussie pour l'utilisateur :", loginReq.Email)
+
+    http.Redirect(w, r, "/home", http.StatusSeeOther)
+}
+
+func LogoutHandler(w http.ResponseWriter, r *http.Request) {
+    session, _ := store.Get(r, "session-name")
+    session.Options.MaxAge = -1
+    session.Save(r, w)
+
+    http.Redirect(w, r, "/home", http.StatusSeeOther)
 }
 
 func AccueilHandler(w http.ResponseWriter, r *http.Request) {
@@ -142,7 +189,7 @@ func AccueilHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Page de création de post
+// Page de création de postfunc PostHandler(w http.ResponseWriter, r *http.Request) {
 func PostHandler(w http.ResponseWriter, r *http.Request) {
     if r.Method == "GET" {
         tmpl, err := template.ParseFiles("web/html/post.html")
@@ -151,33 +198,36 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
             http.Error(w, "Erreur interne du serveur", http.StatusInternalServerError)
             return
         }
-        tmpl.Execute(w, nil)
-        return
-    }
-
-    if r.Method == "POST" {
-        body, _ := io.ReadAll(r.Body)
-        log.Println("Corps de la requête reçu :", string(body)) // Log des données reçues
-
-        var post Post
-        if err := json.Unmarshal(body, &post); err != nil {
-            log.Println("Erreur de décodage JSON :", err)
-            http.Error(w, "Données invalides", http.StatusBadRequest)
+            tmpl.Execute(w, nil)
             return
-        }
-
-        log.Println("Données post après décodage :", post)
-
-        query := `INSERT INTO posts (user_id, title, content, image, category) VALUES (?, ?, ?, ?, ?)`
-        _, err := DB.Exec(query, post.UserID, post.Title, post.Content, post.Image, post.Category)
-        if err != nil {
-            log.Println("Erreur lors de l'insertion du post :", err)
-            http.Error(w, "Erreur lors de la création du post", http.StatusInternalServerError)
-            return
-        }
-
-        log.Println("Post inséré avec succès :", post.Title)
-        w.WriteHeader(http.StatusCreated)
-        json.NewEncoder(w).Encode(map[string]string{"message": "Post créé avec succès"})
     }
-}
+    
+        if r.Method == "POST" {
+            body, _ := io.ReadAll(r.Body)
+            log.Println("Corps de la requête reçu :", string(body)) // Log des données reçues
+    
+            var post Post
+            if err := json.Unmarshal(body, &post); err != nil {
+                log.Println("Erreur de décodage JSON :", err)
+                http.Error(w, "Données invalides", http.StatusBadRequest)
+                return
+            }
+    
+            log.Println("Données post après décodage :", post)
+    
+            // Insertion du post dans la base de données
+            query := `INSERT INTO posts (user_id, title, content, image, category) VALUES (?, ?, ?, ?, ?)`
+            _, err := DB.Exec(query, post.UserID, post.Title, post.Content, post.Image, post.Category)
+            if err != nil {
+                log.Println("Erreur lors de l'insertion du post :", err)
+                http.Error(w, "Erreur lors de la création du post", http.StatusInternalServerError)
+                return
+            }
+    
+            log.Println("Post inséré avec succès :", post.Title)
+    
+            // Redirection vers /home après la création du post
+            http.Redirect(w, r, "/home", http.StatusSeeOther)
+        }
+    }
+    
