@@ -55,20 +55,18 @@ a:hover {
     background-color: #ffffff;
 }
 
-/* Styles généraux pour les cartes */
 .card {
-    background-color: #ffffff; /* Fond blanc pour les cartes */
-    border-radius: 10px; /* Coins arrondis */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre légère */
-    padding: 20px; /* Espacement interne */
-    margin: 20px auto; /* Centrage horizontal avec marges verticales */
-    max-width: 800px; /* Largeur maximale */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
     text-align: center;
     position: relative;
     z-index: 1;
 }
 
-/* Carte spécifique pour register */
 .register-card h1 {
     font-size: 28px;
     color: #23b2a4;
@@ -81,7 +79,6 @@ a:hover {
     line-height: 1.6;
 }
 
-/* Carte spécifique pour main */
 .main-card {
     background-color: #23b2a4;
 }
