@@ -86,7 +86,7 @@ sudo docker-compose up --build
 
 Une fois les conteneurs lancés avec succès, ouvrez votre navigateur et allez à l'adresse suivante :
 
-👉 [http://localhost:8080](http://localhost:8080)
+👉 [http://localhost:8080/home](http://localhost:8080/home)
 
 ---
 
@@ -113,11 +113,11 @@ Ce projet est sous licence **MIT**.
 
 ## 👨‍💻 Auteur
 
-- **24PADROL**
+- **24PADROL**Anthony
 🔗 [GitHub](https://github.com/24PADROL)
-- **CasualElf34**
+- **CasualElf34**Maël
 🔗 [GitHub](https://github.com/CasualElf34)
-- **yasmine200**
+- **yasmine200**Yasmine
 🔗 [GitHub](https://github.com/yasmine200)
-- **mkbyx**
+- **mkbyx**Léo
 🔗 [GitHub](https://github.com/mkbyx)
