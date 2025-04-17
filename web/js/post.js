@@ -16,8 +16,8 @@ document.getElementById("postForm").addEventListener("submit", async function(ev
         });
 
         if (response.ok) {
-            alert("Post créé avec succès !");
-            document.getElementById("postForm").reset(); // Réinitialise le formulaire
+            const data = await response.json();
+            window.location.href = data.redirect; // Redirige vers /home
         } else {
             const errorText = await response.text();
             alert("Erreur : " + errorText);

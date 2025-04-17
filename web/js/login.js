@@ -14,20 +14,14 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         });
 
         if (response.ok) {
-            console.log("Connexion réussie !");
-            window.location.href = "/web/html/home.html"; // Redirige vers la page d'accueil
+            const data = await response.json();
+            window.location.href = data.redirect; // Redirige vers /home
         } else {
             const errorText = await response.text();
-            console.error("Erreur de connexion :", errorText);
             alert("Erreur : " + errorText);
         }
     } catch (error) {
         console.error("Erreur réseau :", error);
         alert("Une erreur réseau est survenue. Veuillez réessayer.");
     }
-        window.location.href = "/auth/google";
-});
-
-document.getElementById("googleLogin").addEventListener("click", function () {
-
 });
