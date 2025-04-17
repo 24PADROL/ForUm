@@ -113,11 +113,11 @@ Ce projet est sous licence **MIT**.
 
 ## 👨‍💻 Auteur
 
-- **24PADROL**Anthony
+- **24PADROL** Anthony
 🔗 [GitHub](https://github.com/24PADROL)
-- **CasualElf34**Maël
+- **CasualElf34** Maël
 🔗 [GitHub](https://github.com/CasualElf34)
-- **yasmine200**Yasmine
+- **yasmine200** Yasmine
 🔗 [GitHub](https://github.com/yasmine200)
-- **mkbyx**Léo
+- **mkbyx** Léo
 🔗 [GitHub](https://github.com/mkbyx)
