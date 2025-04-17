@@ -9,7 +9,6 @@ import (
 
 var DB *sql.DB
 
-// Initialisation de la base de données
 func InitDB() {
 	var err error
 

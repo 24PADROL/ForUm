@@ -2,14 +2,54 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="/web/css/home.css" >
+    <link rel="stylesheet" type="text/css" href="/web/css/home.css">
     <title>Accueil</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Bienvenue sur le Forum</h1>
-        <button onclick="window.location.href='/login'">Connexion</button>
-        <button onclick="window.location.href='/register'">Inscription</button>
-    </div>
+    <div class="frise"></div>
+    <header class="header">
+        <div class="logo">Yorum</div>
+        <nav class="nav">
+            {{if .Email}}
+                <span class="user-email">{{.Email}}</span>
+                <a href="/logout" class="logout">Déconnexion</a>
+            {{else}}
+                <a href="/login" class="login">Connexion</a>
+                <a href="/register" class="register">Inscription</a>
+            {{end}}
+        </nav>
+    </header>
+
+    <section class="card register-card">
+        <h1>Bienvenue sur le Forum de Ynov</h1>
+        <p>Participez aux discussions, créez des sujets et échangez avec les étudiants de n'importe quelle filière.</p>
+    </section>
+
+    <main class="card main-card">
+        <div class="main-content">
+            <div class="last">Dernier post</div>
+            <a href="/post" class="post button">Créer un post</a>
+            
+            {{ if .Posts }}
+                {{ range .Posts }}
+                    <div class="post">
+                        <h2>{{ .Title }}</h2>
+                        <p>{{ .Content }}</p>
+                        {{ if .Image }}
+                            <img src="/uploads/{{ .Image }}" alt="Image du post">
+                        {{ end }}
+                        <p>Catégorie : {{ .Category }}</p>
+                    </div>
+                {{ end }}
+            {{ else }}
+                <p>Aucun post disponible.</p>
+            {{ end }}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Forum. Tous droits réservés.</p>
+        <a href="/about">À propos</a> | <a href="/contact">Contact</a>
+    </footer>
 </body>
 </html>
