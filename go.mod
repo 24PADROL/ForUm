@@ -18,6 +18,8 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/gorilla/mux v1.8.1
+	github.com/lib/pq v1.10.9
 	golang.org/x/oauth2 v0.29.0
 )
 

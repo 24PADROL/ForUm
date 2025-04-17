@@ -13,7 +13,6 @@ func Run(forum *User) {
 	http.HandleFunc("/home", HomeHandler)
 	http.HandleFunc("/login", LoginHandler)
     http.HandleFunc("/register", RegisterHandler)
-    http.HandleFunc("/accueil", AccueilHandler)
     http.HandleFunc("/post", PostHandler)
     http.HandleFunc("/auth/google", GoogleLoginHandler)
     http.HandleFunc("/auth/google/callback", GoogleCallbackHandler)
